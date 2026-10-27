@@ -12,3 +12,6 @@ desktop.ini
 
 # Configuração local do Claude
 .claude/
+
+# Dependências do Node
+node_modules/

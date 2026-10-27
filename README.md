@@ -19,11 +19,21 @@ docs/SEO.md           mapa de SEO e pendências
 
 ## Ver localmente
 
+Precisa do [Node.js](https://nodejs.org) instalado. Na primeira vez:
+
 ```bash
-python -m http.server 4174 --directory site
+npm install
 ```
 
-Abra http://localhost:4174
+Depois, sempre que quiser ver o site:
+
+```bash
+npm run dev
+```
+
+Abra http://localhost:4174 (para o design system: `npm run ds` → http://localhost:4173).
+
+Sem instalar nada, também dá para usar a extensão **Live Server** do VS Code: clique com o botão direito em `site/index.html` → *Open with Live Server*.
 
 ## Editar conteúdo
 
@@ -35,5 +45,5 @@ Depois de mudar CSS ou JS, suba o número em `?v=` nos links do `index.html` par
 
 ## Publicar
 
-Conecte o repositório no Netlify (o `netlify.toml` já aponta para `site/`).
+Conecte o repositório no Netlify e, em *Build settings*, deixe o comando de build vazio e o **Publish directory** como `site`.
 Ao ligar o domínio oficial, troque `https://closerbranding.netlify.app/` em `site/index.html`, `site/robots.txt` e `site/sitemap.xml`.
