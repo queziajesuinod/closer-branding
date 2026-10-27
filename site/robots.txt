@@ -6,4 +6,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://closerbranding.netlify.app/sitemap.xml
+Sitemap: https://closerbranding.com.br/sitemap.xml

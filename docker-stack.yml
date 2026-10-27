@@ -12,11 +12,10 @@ version: "3.9"
 #    de outro projeto (ex.: Semeia) e o token enxerga o repositório closer-branding, não precisa criar de novo:
 #      printf 'SEU_TOKEN' | docker secret create github_token_deploy -
 #
-# 2. ⚠️ DOMÍNIO: troque closerbranding.com.br pelo domínio oficial nas 2 regras (rule=) lá embaixo
-#    e em SITE_URL. Aponte o DNS do domínio e do www para este servidor, para o Traefik
-#    conseguir emitir o certificado.
-#    No código, troque também https://closerbranding.netlify.app/ pelo domínio em
-#    site/index.html, site/robots.txt e site/sitemap.xml (é o endereço que o Google e o WhatsApp leem).
+# 2. Aponte o DNS de closerbranding.com.br e de www.closerbranding.com.br para este servidor,
+#    para o Traefik conseguir emitir o certificado.
+#    (Se o domínio mudar um dia: troque nas 2 regras rule= abaixo, em SITE_URL e também em
+#    site/index.html, site/robots.txt e site/sitemap.xml, que é o endereço que o Google e o WhatsApp leem.)
 #
 # Para publicar uma atualização: faça o push para a main e rode
 #   docker service update --force closer_site

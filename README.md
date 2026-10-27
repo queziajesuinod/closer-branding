@@ -52,7 +52,7 @@ Depois de mudar CSS ou JS, suba o número em `?v=` nos links do `index.html` par
 O passo a passo completo está no topo do `docker-stack.yml`. Em resumo:
 
 1. Secret `github_token_deploy` com um token de leitura do repositório (se já existe por outro projeto e enxerga este repositório, reaproveite).
-2. Troque `closerbranding.com.br` pelo domínio oficial no `docker-stack.yml` e aponte o DNS (com e sem `www`) para o servidor.
+2. Aponte o DNS de `closerbranding.com.br` e `www.closerbranding.com.br` para o servidor.
 3. Primeiro deploy:
 
    ```bash
@@ -65,6 +65,6 @@ O passo a passo completo está no topo do `docker-stack.yml`. Em resumo:
    docker service update --force closer_site
    ```
 
-### Domínio no código
+### Domínio
 
-Ao ligar o domínio oficial, troque `https://closerbranding.netlify.app/` em `site/index.html`, `site/robots.txt` e `site/sitemap.xml`.
+O site usa `https://closerbranding.com.br/`. Se o domínio mudar, troque em `docker-stack.yml`, `site/index.html`, `site/robots.txt` e `site/sitemap.xml`.

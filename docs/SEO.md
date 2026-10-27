@@ -49,7 +49,7 @@ Objetivo de busca: aparecer para quem procura **agência de branding / posiciona
 
 ## 4. Pendências (dependem da Closer)
 
-1. **Domínio oficial.** Hoje tudo aponta para `https://closerbranding.netlify.app/`. Ao ligar o domínio, troque esse endereço em `index.html` (está marcado com um comentário no topo), `robots.txt` e `sitemap.xml`. No `docker-stack.yml`, troque `closerbranding.com.br` pelo domínio (com e sem www) e aponte o DNS para o servidor.
+1. **Domínio oficial.** ✅ Configurado: `https://closerbranding.com.br/` (canonical, Open Graph, JSON-LD, robots.txt, sitemap.xml e Traefik). Falta só apontar o DNS (com e sem www) para o servidor.
 2. **Google Search Console.** Cadastre o domínio, envie o `sitemap.xml` e peça a indexação.
 3. **Perfil da Empresa no Google (Google Meu Negócio).** É o que mais pesa na busca local ("branding em [cidade]"). Use o mesmo nome, telefone e link do site.
 4. **Cidade.** O site diz só "Santa Catarina". Com a cidade definida, ela entra no rodapé, no `addressLocality` do JSON-LD e na description, e isso melhora a busca local.
