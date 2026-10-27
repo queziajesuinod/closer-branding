@@ -1,0 +1,16 @@
+# Netlify: cache e segurança
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Imagens: 7 dias (se trocar um print com o mesmo nome, aparece em até uma semana)
+/assets/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+# CSS e JS: o navegador confere se mudou a cada visita (rápido, usa ETag)
+/css/*
+  Cache-Control: public, max-age=0, must-revalidate
+/js/*
+  Cache-Control: public, max-age=0, must-revalidate

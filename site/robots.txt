@@ -1,0 +1,9 @@
+# robots.txt — Closer Branding
+# Site liberado para buscadores e para as prévias de link (WhatsApp, Instagram, Facebook).
+# Links com ?utm_ ou ?fbclid (anúncios) NÃO são bloqueados: o robô do Facebook precisa deles
+# para montar a prévia; a tag canonical do index.html evita conteúdo duplicado no Google.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://closerbranding.netlify.app/sitemap.xml

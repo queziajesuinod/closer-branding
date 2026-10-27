@@ -1,0 +1,3 @@
+# Netlify publica só a pasta site/ (o design system e os documentos ficam fora do ar)
+[build]
+  publish = "site"

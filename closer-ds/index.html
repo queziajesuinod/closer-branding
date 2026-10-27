@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Closer Design System</title>
+<meta name="description" content="Design system da landing page Closer Branding — tokens, tipografia, componentes e padrões de uso.">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<style>
+  /* estilos só da documentação */
+  .doc-hero { padding-block: var(--space-9) var(--space-8); position: relative; overflow: hidden; }
+  .doc-hero .watermark { right: -6vw; bottom: -.18em; }
+  .doc-toc { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-6); position: relative; z-index: 1; }
+  .doc-toc a { font-family: var(--font-display); font-size: .8125rem; text-decoration: none; color: var(--color-text); border: var(--border-hair); border-color: var(--gray-400); padding: .45rem .85rem; border-radius: var(--radius-pill); }
+  .doc-toc a:hover { background: var(--color-bg-inverse); color: var(--color-text-inverse); border-color: var(--color-bg-inverse); }
+  .doc-sec { padding-block: var(--space-8); border-top: var(--border-ink); }
+  .doc-sec__head { display: grid; gap: var(--space-3); margin-bottom: var(--space-7); }
+  .doc-sec__head .t-label { color: var(--color-text-muted); }
+  .grid { display: grid; gap: var(--space-5); }
+  .grid > * { min-width: 0; }
+  @media (min-width: 720px) { .grid--2 { grid-template-columns: repeat(2, 1fr); } .grid--3 { grid-template-columns: repeat(3, 1fr); } .grid--4 { grid-template-columns: repeat(4, 1fr); } }
+  .panel { background: var(--color-bg-raised); padding: var(--space-6); }
+  .panel--ink { background: var(--color-bg-inverse); color: var(--color-text-inverse); }
+  .panel h4 { margin: 0 0 var(--space-3); }
+  .panel p, .panel ul { margin: 0; font-size: .9375rem; }
+  .panel ul { padding-left: 1.1em; display: grid; gap: var(--space-2); }
+
+  .swatch { display: grid; gap: var(--space-2); }
+  .swatch__chip { aspect-ratio: 16/10; border: var(--border-hair); }
+  .swatch code, .tok { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: .75rem; }
+  .swatch small { font-family: var(--font-display); font-size: .75rem; color: var(--color-text-muted); line-height: 1.4; }
+  .ramp { display: grid; grid-template-columns: repeat(12, 1fr); border: var(--border-hair); }
+  .ramp div { aspect-ratio: 1; display: flex; align-items: flex-end; padding: 4px; font-family: var(--font-display); font-size: .625rem; }
+  @media (max-width: 600px) { .ramp { grid-template-columns: repeat(6, 1fr); } }
+
+  .type-row { display: grid; gap: var(--space-2); padding-block: var(--space-5); border-bottom: var(--border-hair); }
+  @media (min-width: 900px) { .type-row { grid-template-columns: 220px 1fr; align-items: baseline; } }
+  .type-row .meta { font-family: var(--font-display); font-size: .75rem; color: var(--color-text-muted); line-height: 1.5; }
+
+  table.spec { width: 100%; border-collapse: collapse; font-size: .875rem; }
+  .spec th, .spec td { text-align: left; padding: .7rem .75rem .7rem 0; border-bottom: var(--border-hair); vertical-align: top; }
+  .spec th { font-family: var(--font-display); font-weight: 500; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-muted); }
+  .table-wrap { overflow-x: auto; }
+
+  .space-bar { height: 14px; background: var(--color-bg-inverse); }
+  .demo { padding: var(--space-6); background: var(--color-bg-raised); display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
+  .demo--ink { background: var(--color-bg-inverse); }
+  .demo--col { flex-direction: column; align-items: stretch; }
+  .demo-label { font-family: var(--font-display); font-size: .75rem; color: var(--color-text-muted); margin: var(--space-5) 0 var(--space-2); }
+
+  .do, .dont { padding: var(--space-5); border-top: 4px solid; }
+  .do { border-color: var(--gray-900); background: var(--color-bg-raised); }
+  .dont { border-color: var(--gray-400); background: transparent; outline: 1px dashed var(--gray-400); outline-offset: -1px; }
+  .do h4, .dont h4 { margin: 0 0 var(--space-3); font-family: var(--font-display); font-size: .875rem; }
+  .do ul, .dont ul { margin: 0; padding-left: 1.1em; display: grid; gap: var(--space-2); font-size: .9375rem; }
+
+  .logo-tile { aspect-ratio: 16/9; display: grid; place-items: center; }
+  .logo-stack { font-family: var(--font-display); line-height: .85; letter-spacing: -.04em; }
+  .logo-stack b { display: block; font-size: clamp(2.6rem, 2rem + 3vw, 4.2rem); }
+  .logo-stack i { display: block; font-weight: 300; font-size: clamp(1.5rem, 1.1rem + 1.8vw, 2.4rem); padding-left: 38%; letter-spacing: -.01em; }
+
+  .phone { width: 300px; max-width: 100%; height: 600px; border: 10px solid var(--gray-900); border-radius: 36px; overflow: hidden; position: relative; background: var(--color-bg); margin-inline: auto; }
+  .phone__scroll { height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .phone .header { position: sticky; height: 52px; }
+  .phone .fab { position: absolute; width: 52px; height: 52px; display: grid; }
+  .phone .fab svg { width: 24px; height: 24px; }
+
+  .flow { counter-reset: s; display: grid; gap: 0; }
+  .flow li { list-style: none; display: grid; grid-template-columns: 40px 1fr auto; gap: var(--space-3); align-items: baseline; padding: var(--space-3) 0; border-bottom: var(--border-hair); font-size: .9375rem; }
+  .flow li::before { counter-increment: s; content: counter(s, decimal-leading-zero); font-family: var(--font-display); font-weight: 700; }
+  .flow li span:last-child { font-family: var(--font-display); font-size: .75rem; color: var(--color-text-muted); text-align: right; }
+
+  .hero-demo { display: grid; gap: var(--space-6); position: relative; overflow: hidden; padding: var(--space-7) var(--space-5) 0; background: var(--color-bg); }
+  @media (min-width: 900px) { .hero-demo { grid-template-columns: 1.1fr .9fr; align-items: end; padding: var(--space-8) var(--space-7) 0; } }
+  .hero-demo .watermark { left: -2vw; bottom: -.22em; }
+  .hero-demo > *:not(.watermark) { position: relative; z-index: 1; }
+  .hero-demo img { width: 100%; aspect-ratio: 4/5; object-fit: cover; object-position: center 20%; }
+  .hero-demo .note { position: absolute; }
+</style>
+</head>
+<body class="paper">
+
+<header class="header" id="topo">
+  <div class="container header__inner">
+    <a class="logo" href="#topo" aria-label="Closer Branding — início"><b>closer.</b><i>branding</i></a>
+    <nav class="header__nav" aria-label="Seções do design system">
+      <a href="#principios">Princípios</a><a href="#cores">Cores</a><a href="#tipografia">Tipografia</a><a href="#componentes">Componentes</a><a href="#padroes">Padrões</a>
+    </nav>
+    <span class="tag">Design System v1.0</span>
+  </div>
+</header>
+
+<main>
+<section class="doc-hero">
+  <span class="watermark" aria-hidden="true">closer.</span>
+  <div class="container" style="position:relative;z-index:1">
+    <p class="t-label t-muted">Landing page · one page · mobile-first</p>
+    <h1 class="t-display" style="margin:var(--space-3) 0 var(--space-5)">Essência<br><span class="t-italic t-thin">antes da</span> estética.</h1>
+    <p class="t-lead">O sistema visual do site da Closer Branding. Uma extensão do Instagram da marca: preto, branco e cinzas, editorial, com muito respiro. Tudo aqui foi pensado para quem chega pelo anúncio, no celular, e precisa entender em 3 segundos quem são as duas e como conversar com elas.</p>
+    <nav class="doc-toc" aria-label="Índice">
+      <a href="#principios">01 Princípios</a><a href="#logo">02 Logo</a><a href="#cores">03 Cores</a><a href="#tipografia">04 Tipografia</a><a href="#espaco">05 Espaço e grid</a><a href="#forma">06 Forma, textura, movimento</a><a href="#imagem">07 Fotografia</a><a href="#componentes">08 Componentes</a><a href="#padroes">09 Padrões de seção</a><a href="#acessibilidade">10 Acessibilidade e performance</a>
+    </nav>
+  </div>
+</section>
+
+<div class="container">
+
+<!-- 01 PRINCÍPIOS -->
+<section class="doc-sec" id="principios">
+  <div class="doc-sec__head"><span class="t-label">01</span><h2 class="t-h1">Princípios</h2></div>
+  <div class="grid grid--2">
+    <div class="panel"><h4 class="t-h3">1. Contraste, não cor</h4><p>A marca não tem cor de destaque. A hierarquia vem do peso (Bold × Light), do tamanho e do preto sobre off-white. O preto sólido é reservado para o que pede ação: botões e etiquetas.</p></div>
+    <div class="panel"><h4 class="t-h3">2. Um caminho, sempre visível</h4><p>Toda seção termina perto de um WhatsApp: no header, no botão flutuante do celular e na chamada final. Instagram é secundário e nunca compete visualmente.</p></div>
+    <div class="panel"><h4 class="t-h3">3. Respiro editorial</h4><p>Seções com muito espaço vertical, uma ideia por tela no celular e textos com no máximo 62 caracteres por linha. Menos elementos, mais presença.</p></div>
+    <div class="panel"><h4 class="t-h3">4. Humano antes de polido</h4><p>Fotos reais das fundadoras, anotações manuscritas e textura de papel trazem a "inteligência humana aplicada". Elas acompanham o texto, nunca o substituem.</p></div>
+  </div>
+</section>
+
+<!-- 02 LOGO -->
+<section class="doc-sec" id="logo">
+  <div class="doc-sec__head"><span class="t-label">02</span><h2 class="t-h1">Logo</h2><p class="t-body t-muted">"closer." em Poppins Bold e "branding" em Poppins Light Italic. Use o SVG oficial no site; as versões abaixo são recriações tipográficas para referência.</p></div>
+  <div class="grid grid--3">
+    <div><div class="logo-tile" style="background:var(--gray-100);border:var(--border-hair)"><span class="logo" style="font-size:2rem"><b>closer.</b><i>branding</i></span></div><p class="demo-label">Horizontal · header, rodapé</p></div>
+    <div><div class="logo-tile" style="background:var(--gray-900);color:var(--gray-100)"><span class="logo" style="font-size:2rem"><b>closer.</b><i>branding</i></span></div><p class="demo-label">Horizontal invertido · seções escuras</p></div>
+    <div><div class="logo-tile" style="background:#DAE3E1"><span class="logo-stack"><b>closer.</b><i>branding</i></span></div><p class="demo-label">Empilhado · imagem de compartilhamento, favicon grande</p></div>
+  </div>
+  <div class="grid grid--2" style="margin-top:var(--space-6)">
+    <div class="do"><h4>✓ Faça</h4><ul><li>Altura mínima de 20px no celular (header).</li><li>Área de proteção igual à altura do "c".</li><li>Só preto sobre claro ou off-white sobre preto.</li></ul></div>
+    <div class="dont"><h4>✕ Evite</h4><ul><li>Aplicar sobre fotos sem uma área lisa por trás.</li><li>Trocar a fonte, separar o ponto ou colorir.</li><li>Usar o logo como título do hero (o título é texto real, para SEO).</li></ul></div>
+  </div>
+</section>
+
+<!-- 03 CORES -->
+<section class="doc-sec" id="cores">
+  <div class="doc-sec__head"><span class="t-label">03</span><h2 class="t-h1">Cores</h2><p class="t-body t-muted">Uma escala neutra levemente quente, para conversar com o fundo de papel e com o tom das fotos. Sem cor de destaque, nem para o WhatsApp.</p></div>
+
+  <div class="grid grid--4">
+    <div class="swatch"><div class="swatch__chip" style="background:#EEEDEA"></div><code>--color-bg · #EEEDEA</code><small>Paper. Fundo principal do site.</small></div>
+    <div class="swatch"><div class="swatch__chip" style="background:#111"></div><code>--color-text · #111111</code><small>Ink. Texto, botões, etiquetas, seções escuras. 16.1:1 no paper.</small></div>
+    <div class="swatch"><div class="swatch__chip" style="background:#5C5B57"></div><code>--color-text-muted · #5C5B57</code><small>Texto de apoio, legendas. 5.9:1 no paper (AA).</small></div>
+    <div class="swatch"><div class="swatch__chip" style="background:#D4D2CC"></div><code>--color-watermark · #D4D2CC</code><small>Marca d'água e bordas finas. Só decorativo.</small></div>
+  </div>
+
+  <p class="demo-label" style="margin-top:var(--space-7)">Escala neutra · --gray-0 → --gray-950</p>
+  <div class="ramp" aria-hidden="true">
+    <div style="background:#FFF">0</div><div style="background:#F6F5F2">50</div><div style="background:#EEEDEA">100</div><div style="background:#E2E0DB">200</div><div style="background:#D4D2CC">300</div><div style="background:#B3B1AB">400</div><div style="background:#8A8984;color:#fff">500</div><div style="background:#5C5B57;color:#fff">600</div><div style="background:#3D3C39;color:#fff">700</div><div style="background:#262624;color:#fff">800</div><div style="background:#111;color:#fff">900</div><div style="background:#0A0A0A;color:#fff">950</div>
+  </div>
+
+  <div class="table-wrap" style="margin-top:var(--space-6)">
+  <table class="spec">
+    <thead><tr><th>Token semântico</th><th>Valor</th><th>Uso</th></tr></thead>
+    <tbody>
+      <tr><td class="tok">--color-bg</td><td class="tok">gray-100</td><td>Fundo padrão de todas as seções claras</td></tr>
+      <tr><td class="tok">--color-bg-raised</td><td class="tok">gray-50</td><td>Cards de serviço e painéis que precisam se destacar levemente</td></tr>
+      <tr><td class="tok">--color-bg-inverse</td><td class="tok">gray-900</td><td>Manifesto, chamada final, rodapé, botão primário</td></tr>
+      <tr><td class="tok">--color-text-muted</td><td class="tok">gray-600</td><td>Apoio, nicho e cidade nos cases. Nunca usar gray-500 para texto</td></tr>
+      <tr><td class="tok">--color-text-inverse-muted</td><td class="tok">gray-400</td><td>Texto de apoio em fundo escuro (7.9:1)</td></tr>
+      <tr><td class="tok">--color-border</td><td class="tok">gray-300</td><td>Divisores finos (1px)</td></tr>
+      <tr><td class="tok">--color-border-strong</td><td class="tok">gray-900</td><td>Linhas editoriais acima de cada serviço (1.5px), botão secundário</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="demo-label">Ritmo sugerido de fundos na página: claro → <b>escuro</b> (manifesto) → claro → claro → claro → claro → claro → <b>escuro</b> (chamada final + rodapé). Duas manchas pretas marcam o início do pensamento e a decisão.</p>
+</section>
+
+<!-- 04 TIPOGRAFIA -->
+<section class="doc-sec" id="tipografia">
+  <div class="doc-sec__head"><span class="t-label">04</span><h2 class="t-h1">Tipografia</h2><p class="t-body t-muted">Três vozes: Poppins fala alto (títulos, botões), Merriweather conversa (textos), Caveat anota à mão (anotações). Escala fluida com <span class="tok">clamp()</span>: cresce suavemente de 360px a 1280px, sem saltos de breakpoint.</p></div>
+
+  <div class="type-row"><div class="meta">--text-display<br>Poppins Bold · 48→120px<br>entrelinha .95 · -0.035em</div><div class="t-display">Closer Branding</div></div>
+  <div class="type-row"><div class="meta">--text-h1<br>Poppins Bold · 36→72px<br>entrelinha 1.1</div><div class="t-h1">Afinal, o que <span class="t-italic">fazemos?</span></div></div>
+  <div class="type-row"><div class="meta">--text-h2<br>Poppins Bold Italic · 28→48px</div><div class="t-h2 t-italic">Antes de comunicar, é preciso compreender quem se é.</div></div>
+  <div class="type-row"><div class="meta">--text-h3<br>Poppins Bold · 20→26px</div><div class="t-h3">Planejamento estratégico</div></div>
+  <div class="type-row"><div class="meta">--text-lead<br>Merriweather Light · 17→21px<br>entrelinha 1.6</div><p class="t-lead" style="margin:0">Branding, posicionamento e storytelling para quem quer ser percebido por aquilo que realmente é.</p></div>
+  <div class="type-row"><div class="meta">--text-body<br>Merriweather Light · 16px<br>entrelinha 1.75 · máx. 62ch</div><p class="t-body" style="margin:0">Uma agência criada por duas mulheres que decidiram unir estratégia &amp; criação para fazer branding de um jeito diferente: olhando primeiro para a essência, antes da estética.</p></div>
+  <div class="type-row"><div class="meta">--text-label<br>Poppins Medium · 12px<br>caixa alta · +0.12em</div><div class="t-label">Um dos nossos clientes · Fotógrafa · Blumenau/SC</div></div>
+  <div class="type-row"><div class="meta">--text-hand<br>Caveat Medium · 26→36px<br>minúsculas, como escrita real</div><div class="t-hand">consultoria · planejamento · execução</div></div>
+
+  <div class="grid grid--2" style="margin-top:var(--space-6)">
+    <div class="do"><h4>✓ Faça</h4><ul><li>Misturar Bold e Light Italic na mesma frase para dar ritmo, como no logo.</li><li>Corpo de texto sempre ≥ 16px no celular.</li><li>Manuscrita só em palavras soltas (1 a 3 palavras).</li></ul></div>
+    <div class="dont"><h4>✕ Evite</h4><ul><li>Parágrafos em Poppins ou títulos em Merriweather.</li><li>Manuscrita em frases inteiras, botões ou informação essencial.</li><li>Texto justificado (cria rios no celular).</li></ul></div>
+  </div>
+</section>
+
+<!-- 05 ESPAÇO -->
+<section class="doc-sec" id="espaco">
+  <div class="doc-sec__head"><span class="t-label">05</span><h2 class="t-h1">Espaço e grid</h2><p class="t-body t-muted">Base de 4px. Os espaços grandes (96px+) são o que torna o layout editorial: na dúvida, mais respiro.</p></div>
+  <div class="table-wrap">
+  <table class="spec">
+    <thead><tr><th>Token</th><th>Valor</th><th style="width:40%"></th><th>Uso típico</th></tr></thead>
+    <tbody>
+      <tr><td class="tok">--space-1</td><td>4px</td><td><div class="space-bar" style="width:4px"></div></td><td>Ajustes finos, gap da grade do feed</td></tr>
+      <tr><td class="tok">--space-2</td><td>8px</td><td><div class="space-bar" style="width:8px"></div></td><td>Entre etiquetas</td></tr>
+      <tr><td class="tok">--space-3</td><td>12px</td><td><div class="space-bar" style="width:12px"></div></td><td>Ícone ↔ texto no botão</td></tr>
+      <tr><td class="tok">--space-4</td><td>16px</td><td><div class="space-bar" style="width:16px"></div></td><td>Título ↔ parágrafo curto</td></tr>
+      <tr><td class="tok">--space-5</td><td>24px</td><td><div class="space-bar" style="width:24px"></div></td><td>Entre parágrafos, entre botões</td></tr>
+      <tr><td class="tok">--space-6</td><td>32px</td><td><div class="space-bar" style="width:32px"></div></td><td>Padding de cards, botão (lateral)</td></tr>
+      <tr><td class="tok">--space-7</td><td>48px</td><td><div class="space-bar" style="width:48px"></div></td><td>Título de seção ↔ conteúdo</td></tr>
+      <tr><td class="tok">--space-8</td><td>64px</td><td><div class="space-bar" style="width:64px"></div></td><td>Entre blocos de uma seção</td></tr>
+      <tr><td class="tok">--space-9</td><td>96px</td><td><div class="space-bar" style="width:96px"></div></td><td>Respiro editorial</td></tr>
+      <tr><td class="tok">--section-y</td><td>72→160px</td><td><div class="space-bar" style="width:min(160px,100%)"></div></td><td>Padding vertical de cada seção (fluido)</td></tr>
+      <tr><td class="tok">--gutter</td><td>20→48px</td><td><div class="space-bar" style="width:20px"></div></td><td>Margem lateral do container</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="grid grid--3" style="margin-top:var(--space-6)">
+    <div class="panel"><h4 class="t-label">Celular · &lt; 720px</h4><p>1 coluna, margem 20px. Uma ideia por tela. Fotos sangram até a borda quando forem protagonistas.</p></div>
+    <div class="panel"><h4 class="t-label">Tablet · 720–1023px</h4><p>2 colunas para serviços e cases. Header ainda com menu compacto até 900px.</p></div>
+    <div class="panel"><h4 class="t-label">Desktop · ≥ 1024px</h4><p>12 colunas, container 1240px. Texto em 5–6 colunas, foto em 6–7. Botão flutuante some (o header já tem o WhatsApp).</p></div>
+  </div>
+</section>
+
+<!-- 06 FORMA -->
+<section class="doc-sec" id="forma">
+  <div class="doc-sec__head"><span class="t-label">06</span><h2 class="t-h1">Forma, textura e movimento</h2></div>
+  <div class="grid grid--3">
+    <div class="panel"><h4 class="t-h3">Cantos</h4><p>Retos (<span class="tok">--radius-0</span>) em fotos, cards e etiquetas: é editorial, como papel. Pílula (<span class="tok">--radius-pill</span>) só em elementos clicáveis — botões, seletor, flutuante — para que a forma já diga "toque aqui".</p></div>
+    <div class="panel"><h4 class="t-h3">Elevação</h4><p>Praticamente nenhuma. Sombra só no botão flutuante (<span class="tok">--shadow-float</span>), porque ele flutua sobre o conteúdo. Separação vem de linhas finas e troca de fundo.</p></div>
+    <div class="panel"><h4 class="t-h3">Textura</h4><p>Ruído de papel em SVG embutido (<span class="tok">.paper</span>), opacidade 5%, sem requisição extra. Se usar foto de papel amassado, no máx. 1 por página, WebP &lt; 60kb, opacidade ≤ 8%.</p></div>
+  </div>
+  <div class="table-wrap" style="margin-top:var(--space-6)">
+  <table class="spec">
+    <thead><tr><th>Movimento</th><th>Duração</th><th>Curva</th><th>Onde</th></tr></thead>
+    <tbody>
+      <tr><td class="tok">--dur-fast</td><td>150ms</td><td class="tok">--ease-out</td><td>Hover e pressão de botões, sublinhado dos links</td></tr>
+      <tr><td class="tok">--dur-base</td><td>280ms</td><td class="tok">--ease-out</td><td>Seletor Antes/Depois, menu, header ao rolar, flutuante</td></tr>
+      <tr><td class="tok">--dur-reveal</td><td>800ms</td><td class="tok">--ease-out</td><td>Entrada suave ao rolar: opacidade 0→1 e 24px para cima, uma vez só. Escalonar filhos em 80ms</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="demo-label">Com "reduzir movimento" ativo no aparelho, todas as durações vão a 0 e nada se desloca.</p>
+
+  <div style="position:relative;overflow:hidden;height:220px;margin-top:var(--space-6);background:var(--color-bg);border:var(--border-hair)">
+    <span class="watermark" aria-hidden="true" style="right:-.12em;bottom:-.2em">closer.</span>
+    <p class="t-label" style="position:relative;z-index:1;padding:var(--space-5)">Marca d'água · "closer." gigante, cortada na borda inferior ou lateral. Nunca atrás de título ou texto</p>
+  </div>
+</section>
+
+<!-- 07 IMAGEM -->
+<section class="doc-sec" id="imagem">
+  <div class="doc-sec__head"><span class="t-label">07</span><h2 class="t-h1">Fotografia</h2><p class="t-body t-muted">O ensaio já tem três climas: estúdio claro, luz de janela com sombras e fundo marrom. No site, tudo em P&amp;B para manter a paleta. Prioridade para o claro e para a luz de janela, que conversam com o fundo de papel.</p></div>
+  <div class="grid grid--4">
+    <figure style="margin:0"><img src="assets/foto-70.webp" alt="Michele e Kati lado a lado em estúdio claro" style="aspect-ratio:4/5;object-fit:cover;width:100%" loading="lazy"><figcaption class="demo-label">Hero · as duas juntas, olhar para a câmera</figcaption></figure>
+    <figure style="margin:0"><img src="assets/foto-221-1.webp" alt="As fundadoras trabalhando sentadas no chão com um notebook" style="aspect-ratio:4/5;object-fit:cover;width:100%" loading="lazy"><figcaption class="demo-label">Como trabalhamos · as duas em ação</figcaption></figure>
+    <figure style="margin:0"><img src="assets/foto-341.webp" alt="Retrato de uma das fundadoras com luz de janela" style="aspect-ratio:4/5;object-fit:cover;width:100%" loading="lazy"><figcaption class="demo-label">Quem somos · retrato individual</figcaption></figure>
+    <figure style="margin:0"><img src="assets/foto-402.webp" alt="Retrato da outra fundadora com sombra de janela na parede" style="aspect-ratio:4/5;object-fit:cover;width:100%" loading="lazy"><figcaption class="demo-label">Quem somos · retrato individual</figcaption></figure>
+  </div>
+  <div class="grid grid--2" style="margin-top:var(--space-6)">
+    <div class="do"><h4>✓ Especificação</h4><ul><li>WebP, qualidade ~72, P&amp;B tonalizado em papel: pretos <span class="tok">#121211</span>, brancos <span class="tok">#F3F2EF</span>. Assim o fundo branco do estúdio não "recorta" a foto do fundo off-white. Hero ≤ 130kb, demais ≤ 60kb.</li><li><span class="tok">srcset</span> com 600w / 900w / 1400w; <span class="tok">loading="lazy"</span> em tudo abaixo do hero.</li><li>Proporção 4:5 para retratos e 3:4 para a grade dos cases (igual ao perfil do Instagram); 3:2 para a foto horizontal das duas conversando.</li><li><span class="tok">alt</span> descritivo com o nome de quem aparece.</li></ul></div>
+    <div class="dont"><h4>✕ Evite</h4><ul><li>As fotos do fundo marrom em cor (quebram a paleta).</li><li>Texto sobre o rosto ou sobre áreas de sombra recortada.</li><li>Filtros, molduras arredondadas ou sombras em fotos.</li></ul></div>
+  </div>
+</section>
+
+<!-- 08 COMPONENTES -->
+<section class="doc-sec" id="componentes">
+  <div class="doc-sec__head"><span class="t-label">08</span><h2 class="t-h1">Componentes</h2><p class="t-body t-muted">Classes prontas em <span class="tok">components.css</span>. Todos com alvo de toque ≥ 48px e foco visível.</p></div>
+
+  <!-- Botão -->
+  <h3 class="t-h2" style="margin-bottom:var(--space-4)">Botão</h3>
+  <div class="table-wrap"><table class="spec">
+    <thead><tr><th>Variante</th><th>Classe</th><th>Quando usar</th></tr></thead>
+    <tbody>
+      <tr><td>Primário</td><td class="tok">.btn</td><td>Conversar no WhatsApp. Um por tela, no máximo.</td></tr>
+      <tr><td>Secundário</td><td class="tok">.btn--secondary</td><td>Ver o Instagram, ver perfil do cliente.</td></tr>
+      <tr><td>Fantasma</td><td class="tok">.btn--ghost</td><td>Links de baixa ênfase ("ver todos os serviços").</td></tr>
+      <tr><td>Flutuante</td><td class="tok">.fab</td><td>WhatsApp fixo no canto inferior direito, só abaixo de 1024px. Some enquanto a chamada final está na tela.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="demo-label">Claro · tamanhos sm / md / lg e estados</p>
+  <div class="demo">
+    <a class="btn btn--lg" href="#" data-wa><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>Conversar no WhatsApp</a>
+    <a class="btn" href="#">Conversar no WhatsApp</a>
+    <a class="btn btn--sm" href="#">WhatsApp</a>
+    <a class="btn btn--secondary" href="#">Ver o Instagram</a>
+    <a class="btn btn--ghost" href="#">Ver perfil →</a>
+    <button class="btn is-loading" type="button" aria-label="Carregando">Carregando</button>
+    <button class="btn" type="button" disabled>Desativado</button>
+  </div>
+  <p class="demo-label">Escuro · chamada final</p>
+  <div class="demo demo--ink on-dark">
+    <a class="btn btn--lg" href="#">Conversar no WhatsApp</a>
+    <a class="btn btn--secondary btn--lg" href="#">Ver o Instagram</a>
+  </div>
+  <div class="table-wrap" style="margin-top:var(--space-5)"><table class="spec">
+    <thead><tr><th>Estado</th><th>Visual</th><th>Comportamento</th></tr></thead>
+    <tbody>
+      <tr><td>Padrão</td><td>Pílula preta, texto paper, Poppins Medium 16px</td><td>—</td></tr>
+      <tr><td>Hover</td><td>Fundo gray-700 (secundário: preenche de preto)</td><td>150ms</td></tr>
+      <tr><td>Pressionado</td><td>scale(.98)</td><td>Feedback tátil no celular</td></tr>
+      <tr><td>Foco</td><td>Contorno 2px ink, afastado 3px</td><td>Só via teclado (:focus-visible)</td></tr>
+      <tr><td>Carregando</td><td>Spinner no lugar do texto</td><td>Não aplicável a links do WhatsApp, só a formulários futuros</td></tr>
+    </tbody>
+  </table></div>
+  <div class="panel" style="margin-top:var(--space-5)"><h4 class="t-label">Link do WhatsApp</h4><p class="tok" style="word-break:break-all">https://wa.me/5547933884494?text=Oi%2C%20Closer!%20Vi%20o%20site%20de%20voc%C3%AAs%20e%20quero%20entender%20como%20voc%C3%AAs%20podem%20ajudar%20a%20minha%20marca.</p><p style="margin-top:var(--space-3)">Todos os botões de WhatsApp usam o atributo <span class="tok">data-wa</span> e disparam <span class="tok">fbq('track','Contact')</span> no clique, para medir a conversão do anúncio. Abrir em <span class="tok">target="_blank" rel="noopener"</span>.</p></div>
+
+  <!-- Etiqueta & anotação -->
+  <h3 class="t-h2" style="margin:var(--space-8) 0 var(--space-4)">Etiqueta e anotação</h3>
+  <div class="demo" style="align-items:flex-start">
+    <span class="tag">Um dos nossos clientes</span>
+    <span class="tag tag--lg">Consultoria de imagem</span>
+    <span class="tag tag--outline">Reels</span>
+    <span class="tag tag--outline">Direção criativa</span>
+    <span class="note"><span class="t-hand">consultoria</span><svg viewBox="0 0 44 32" aria-hidden="true"><path d="M2 6c10 2 22 8 34 20"/><path d="M28 25l8 1-1-8"/></svg></span>
+  </div>
+  <div class="grid grid--3" style="margin-top:var(--space-4)">
+    <div class="panel"><h4 class="t-label">.tag</h4><p>Faixa preta, Poppins Bold caixa alta. Rótulo acima do nome do cliente e etapas.</p></div>
+    <div class="panel"><h4 class="t-label">.tag--lg</h4><p>Título de serviço "em faixa", como no carrossel "Afinal, o que fazemos?". Pode quebrar em 2 linhas: cada linha vira uma faixa (<span class="tok">box-decoration-break: clone</span>).</p></div>
+    <div class="panel"><h4 class="t-label">.note</h4><p>Palavra manuscrita + seta SVG desenhada. Decorativa: <span class="tok">aria-hidden</span> na seta, máx. 1–2 por seção.</p></div>
+  </div>
+
+  <!-- Serviço -->
+  <h3 class="t-h2" style="margin:var(--space-8) 0 var(--space-4)">Card de serviço</h3>
+  <p class="t-body t-muted" style="margin-bottom:var(--space-5)">Sem caixa, sem sombra: uma linha preta de 1.5px separa os 7 serviços como num índice de revista. Celular: lista empilhada. Desktop: 2 colunas.</p>
+  <div class="grid grid--2">
+    <article class="service"><span class="service__num">01</span><h4 class="t-h3">Consultoria de imagem</h4><p class="t-muted" style="font-size:.9375rem">Conectamos elementos visuais e comunicação para que a imagem transmitida seja coerente com o posicionamento.</p></article>
+    <article class="service"><span class="service__num">02</span><h4 class="t-h3">Planejamento estratégico</h4><p class="t-muted" style="font-size:.9375rem">Definimos as melhores estratégias de comunicação, analisamos oportunidades e organizamos ações e conteúdos.</p></article>
+  </div>
+
+  <!-- Etapa -->
+  <h3 class="t-h2" style="margin:var(--space-8) 0 var(--space-4)">Etapa do método</h3>
+  <div class="grid grid--2">
+    <div>
+      <div class="step"><span class="step__num">01</span><h4 class="t-h3">Diagnóstico</h4><p class="t-muted">Entendemos quem você é, seu nicho e como está sendo percebido hoje.</p></div>
+      <div class="step"><span class="step__num">02</span><h4 class="t-h3">Estratégia</h4><p class="t-muted">Definimos posicionamento, mensagens e planejamento de conteúdo.</p></div>
+    </div>
+    <div class="panel"><h4 class="t-label">Uso</h4><ul><li>Número em Poppins Bold Italic, grande, como âncora visual.</li><li>No desktop, as 4 etapas podem ficar em linha, com o número em cima.</li><li>Lista ordenada (<span class="tok">&lt;ol&gt;</span>) para leitores de tela anunciarem "1 de 4".</li></ul></div>
+  </div>
+
+  <!-- Case -->
+  <h3 class="t-h2" style="margin:var(--space-8) 0 var(--space-4)">Case com Antes / Depois</h3>
+  <p class="t-body t-muted" style="margin-bottom:var(--space-5)">No celular, um seletor segmentado troca a grade (economiza rolagem e cria um momento de descoberta). No desktop ≥ 1024px, as duas grades lado a lado e o seletor some.</p>
+  <div class="grid grid--2">
+    <article class="case" data-case>
+      <div class="case__head">
+        <span class="tag" style="justify-self:start">Um dos nossos clientes</span>
+        <h4 class="t-h2">Patrícia Boeving</h4>
+        <p class="t-label t-muted" style="margin:0">Fotógrafa · Santa Catarina</p>
+        <p style="margin:0">Trazer constância e uma identidade real para o perfil: mostrar quem é a Patrícia.</p>
+        <div class="case__tags"><span class="tag tag--outline">Posicionamento</span><span class="tag tag--outline">Direção criativa</span><span class="tag tag--outline">Reels</span></div>
+      </div>
+      <div class="segmented" role="tablist" aria-label="Comparar perfil">
+        <button role="tab" aria-selected="false" data-show="antes">Antes</button>
+        <button role="tab" aria-selected="true" data-show="depois">Depois</button>
+      </div>
+      <div class="case__grid" data-panel="antes" hidden><div style="background:#C9C7C1"></div><div style="background:#BEBCB6"></div><div style="background:#C9C7C1"></div><div style="background:#BEBCB6"></div><div style="background:#C9C7C1"></div><div style="background:#BEBCB6"></div></div>
+      <div class="case__grid" data-panel="depois"><img src="assets/foto-341.webp" alt="" style="object-fit:cover;width:100%;height:100%"><div style="background:#111"></div><img src="assets/foto-26.webp" alt="" style="object-fit:cover;width:100%;height:100%"><div style="background:#111"></div><img src="assets/foto-456-5.webp" alt="" style="object-fit:cover;width:100%;height:100%"><div style="background:#262624"></div></div>
+      <a class="btn btn--secondary btn--sm" href="#" style="justify-self:start">Ver @patriciaboevingfotografia</a>
+    </article>
+    <div class="grid" style="align-content:start">
+      <div class="panel"><h4 class="t-label">Estrutura</h4><ul><li>Etiqueta "Um dos nossos clientes"</li><li>Nome (h2) · nicho e cidade (label muted)</li><li>Desafio em 1 frase</li><li>2 a 4 etiquetas contorno</li><li>Seletor · grade 3×2 em 3:4 · gap 3px (igual à grade atual do perfil no Instagram)</li><li>Botão secundário para o perfil</li></ul></div>
+      <div class="panel"><h4 class="t-label">Caso Sheila (sem "antes")</h4><div class="case__empty"><p class="t-hand" style="margin:0">antes: não existia perfil profissional</p></div><p style="margin-top:var(--space-3)">O estado vazio é uma afirmação, não um erro: borda tracejada + frase manuscrita.</p></div>
+      <div class="panel"><h4 class="t-label">Acessibilidade</h4><p><span class="tok">role="tablist"</span>, setas ← → trocam a aba, prints com <span class="tok">alt</span> "Publicação de [cliente], antes/depois da Closer".</p></div>
+    </div>
+  </div>
+
+  <!-- Cookie -->
+  <h3 class="t-h2" style="margin:var(--space-8) 0 var(--space-4)">Aviso de cookies (LGPD)</h3>
+  <div class="cookie on-dark">
+    <p>Usamos cookies para entender como você chegou até aqui e melhorar nossos anúncios. <a href="#" style="color:inherit">Saiba mais</a></p>
+    <button class="btn btn--sm" type="button">Aceitar</button>
+    <button class="btn btn--secondary btn--sm" type="button">Recusar</button>
+  </div>
+  <p class="demo-label">Faixa fixa no rodapé, altura máx. ~96px no celular (não cobre o primeiro CTA). Pixel só carrega após "Aceitar". O botão flutuante sobe acima da faixa enquanto ela existir.</p>
+</section>
+
+<!-- 09 PADRÕES -->
+<section class="doc-sec" id="padroes">
+  <div class="doc-sec__head"><span class="t-label">09</span><h2 class="t-h1">Padrões de seção</h2><p class="t-body t-muted">Como os componentes se combinam nas 9 seções do briefing.</p></div>
+
+  <p class="demo-label">Hero · referência de composição (desktop)</p>
+  <div class="hero-demo">
+    <span class="watermark" aria-hidden="true">closer.</span>
+    <div style="padding-bottom:var(--space-7)">
+      <h4 class="t-display">Closer<br>Branding</h4>
+      <p class="t-h2 t-italic t-thin" style="margin:var(--space-4) 0">Pessoas e marcas, na sua essência.</p>
+      <p class="t-body t-muted">Branding, posicionamento e storytelling para quem quer ser percebido por aquilo que realmente é.</p>
+      <a class="btn btn--lg" href="#" style="margin-top:var(--space-5)">Conversar no WhatsApp</a>
+    </div>
+    <div style="position:relative">
+      <img src="assets/foto-70.webp" alt="Michele Borges e Kati Henschel, fundadoras da Closer Branding">
+      <span class="note" aria-hidden="true" style="right:8px;top:-44px"><span class="t-hand">as fundadoras</span><svg viewBox="0 0 44 32"><path d="M2 6c10 2 22 8 34 20"/><path d="M28 25l8 1-1-8"/></svg></span>
+    </div>
+  </div>
+
+  <div class="grid grid--2" style="margin-top:var(--space-8);align-items:start">
+    <div>
+      <p class="demo-label" style="margin-top:0">Ordem da página e ponto de ação de cada seção</p>
+      <ol class="flow" style="padding:0;margin:0">
+        <li><span>Header fixo · âncoras + WhatsApp</span><span>sempre</span></li>
+        <li><span>Hero · título, assinatura, foto, botão</span><span>WhatsApp</span></li>
+        <li><span>Manifesto · fundo escuro, h2 itálico</span><span>—</span></li>
+        <li><span>Quem somos · 2 retratos + nomes</span><span>—</span></li>
+        <li><span>Para quem é · 3 frases, a última em destaque</span><span>—</span></li>
+        <li><span>O que fazemos · 7 serviços + manuscritas</span><span>fantasma</span></li>
+        <li><span>Como trabalhamos · 4 etapas</span><span>—</span></li>
+        <li><span>Cases + feed @closer.branding</span><span>perfis</span></li>
+        <li><span>Chamada final · fundo escuro</span><span>WhatsApp + IG</span></li>
+        <li><span>Rodapé · logo, contatos, cidade, ano</span><span>links</span></li>
+      </ol>
+      <div class="panel" style="margin-top:var(--space-6)"><h4 class="t-label">Regras de usabilidade</h4><ul>
+        <li>O botão de WhatsApp aparece acima da dobra no celular (hero ≤ 100svh, com foto abaixo do texto).</li>
+        <li>Menu no celular: painel em tela cheia com as 4 âncoras em h2 e o WhatsApp no fim; fecha ao tocar numa âncora ou Esc.</li>
+        <li>Header ganha linha inferior ao rolar e marca a seção ativa (<span class="tok">aria-current</span>).</li>
+        <li>Flutuante aparece após o hero e some na chamada final (evita dois CTAs iguais na mesma tela).</li>
+      </ul></div>
+    </div>
+    <div>
+      <p class="demo-label" style="margin-top:0">Celular · 375px (role dentro do aparelho)</p>
+      <div class="phone">
+        <div class="phone__scroll">
+          <div class="header is-scrolled"><div class="header__inner" style="padding-inline:16px"><span class="logo" style="font-size:1.05rem"><b>closer.</b><i>branding</i></span><button class="header__menu" aria-label="Abrir menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8h18M3 16h18"/></svg></button></div></div>
+          <div style="padding:28px 16px 20px;position:relative;overflow:hidden">
+            <span class="watermark" aria-hidden="true" style="font-size:9rem;right:-60px;bottom:-.3em">closer.</span>
+            <div style="position:relative">
+              <p class="t-label t-muted" style="margin:0 0 8px">Agência de branding · SC</p>
+              <p class="t-display" style="font-size:2.9rem;margin:0">Closer<br>Branding</p>
+              <p class="t-italic" style="font-family:var(--font-display);font-weight:300;font-size:1.3rem;line-height:1.2;margin:12px 0">Pessoas e marcas, na sua essência.</p>
+              <p style="font-size:.9rem;margin:0 0 16px" class="t-muted">Branding, posicionamento e storytelling para quem quer ser percebido por aquilo que realmente é.</p>
+              <a class="btn btn--block" href="#">Conversar no WhatsApp</a>
+            </div>
+            <div style="height:56px"></div>
+          </div>
+          <img src="assets/foto-70.webp" alt="" style="width:100%;aspect-ratio:4/5;object-fit:cover">
+          <div class="section--ink" style="padding:56px 16px">
+            <p class="t-hand" style="color:var(--gray-400);margin:0 0 8px">manifesto</p>
+            <p class="t-h2 t-italic" style="font-size:1.7rem;margin:0">Antes de comunicar, é preciso compreender quem se é.</p>
+          </div>
+          <div style="padding:56px 16px">
+            <p class="t-h1" style="font-size:2rem;margin:0 0 20px">Afinal, o que <span class="t-italic">fazemos?</span></p>
+            <div class="service" style="padding:20px 0"><span class="service__num">01</span><span class="tag tag--lg" style="justify-self:start">Consultoria de imagem</span><p class="t-muted" style="font-size:.875rem">Conectamos elementos visuais e comunicação.</p></div>
+            <div class="service" style="padding:20px 0"><span class="service__num">02</span><span class="tag tag--lg" style="justify-self:start">Planejamento estratégico</span></div>
+          </div>
+        </div>
+        <a class="fab" href="#" aria-label="Conversar no WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 ACESSIBILIDADE -->
+<section class="doc-sec" id="acessibilidade">
+  <div class="doc-sec__head"><span class="t-label">10</span><h2 class="t-h1">Acessibilidade e performance</h2></div>
+  <div class="grid grid--2">
+    <div class="panel"><h4 class="t-h3">Acessibilidade (WCAG 2.2 AA)</h4><ul>
+      <li>Contraste: texto ≥ 4.5:1 (ink 16.1:1, muted 5.9:1). gray-500 nunca em texto.</li>
+      <li>Alvos de toque ≥ 48×48px, com 8px entre eles.</li>
+      <li>Foco visível em tudo que é clicável; ordem de tab segue a leitura.</li>
+      <li>Um único <span class="tok">&lt;h1&gt;</span> ("Closer Branding"); seções com <span class="tok">&lt;h2&gt;</span>.</li>
+      <li>Marca d'água, setas e manuscritas decorativas com <span class="tok">aria-hidden</span>.</li>
+      <li>Respeitar <span class="tok">prefers-reduced-motion</span>.</li>
+      <li>Botão flutuante com <span class="tok">aria-label="Conversar no WhatsApp"</span>.</li>
+    </ul></div>
+    <div class="panel"><h4 class="t-h3">Performance (&lt; 3s no 4G)</h4><ul>
+      <li>Orçamento: HTML+CSS &lt; 60kb, JS &lt; 30kb, imagens acima da dobra &lt; 200kb.</li>
+      <li>Fontes: só os pesos usados (Poppins 300i/500/700/700i, Merriweather 300/400, Caveat 500), <span class="tok">font-display: swap</span>, preload da Poppins 700.</li>
+      <li>Hero com <span class="tok">fetchpriority="high"</span>, demais imagens lazy.</li>
+      <li>Textura de papel em SVG inline (0 requisições).</li>
+      <li>Pixel da Meta carregado só após consentimento.</li>
+      <li>Meta tags: title, description, og:image 1200×630 com logo empilhado sobre foto P&amp;B.</li>
+    </ul></div>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer class="section--ink on-dark" style="padding-block:var(--space-8);margin-top:var(--space-8);position:relative;overflow:hidden">
+  <span class="watermark" aria-hidden="true" style="right:-.1em;bottom:-.25em">closer.</span>
+  <div class="container" style="position:relative;z-index:1;display:grid;gap:var(--space-4)">
+    <span class="logo" style="font-size:1.75rem"><b>closer.</b><i>branding</i></span>
+    <p class="t-muted" style="margin:0">Pessoas e marcas, na sua essência. · Design System v1.0 · 2026</p>
+    <p class="t-label t-muted" style="margin:0">Arquivos: tokens.css · components.css · assets/</p>
+  </div>
+</footer>
+
+<script>
+  // Seletor Antes/Depois
+  document.querySelectorAll('[data-case]').forEach(c => {
+    const tabs = [...c.querySelectorAll('[role=tab]')];
+    const select = t => {
+      tabs.forEach(b => b.setAttribute('aria-selected', b === t));
+      c.querySelectorAll('[data-panel]').forEach(p => p.hidden = p.dataset.panel !== t.dataset.show);
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(t));
+      t.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]; n.focus(); select(n); }
+      });
+    });
+  });
+  // Header ao rolar
+  const h = document.querySelector('body > .header');
+  addEventListener('scroll', () => h.classList.toggle('is-scrolled', scrollY > 8), { passive: true });
+  document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+</script>
+</body>
+</html>
