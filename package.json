@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "serve site -l 4174",
     "ds": "serve closer-ds -l 4173",
-    "start": "serve site --no-clipboard -l tcp://0.0.0.0:3013"
+    "start": "serve site --no-clipboard -l tcp://0.0.0.0:3017"
   },
   "dependencies": {
     "serve": "14.2.4"

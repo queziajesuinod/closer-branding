@@ -33,7 +33,7 @@ services:
       # Mantém o código clonado entre reinícios (só faz fetch em vez de clonar de novo).
       - closer_app:/app
     environment:
-      PORT: 3013
+      PORT: 3017
       SITE_URL: https://closerbranding.com.br
       TZ: America/Sao_Paulo
       GIT_REPO: https://github.com/queziajesuinod/closer-branding.git
@@ -67,7 +67,7 @@ services:
         echo "✨ Closer Branding no ar!"
         exec npx --no-install serve site --no-clipboard -l "tcp://0.0.0.0:$$PORT"
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3013/ || exit 1"]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3017/ || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -95,7 +95,7 @@ services:
         - "traefik.http.routers.closer.entrypoints=web"
         - "traefik.http.routers.closer.middlewares=closer-https-redirect"
         # Porta do container
-        - "traefik.http.services.closer-service.loadbalancer.server.port=3013"
+        - "traefik.http.services.closer-service.loadbalancer.server.port=3017"
         # Redirect HTTPS
         - "traefik.http.middlewares.closer-https-redirect.redirectscheme.scheme=https"
         - "traefik.http.middlewares.closer-https-redirect.redirectscheme.permanent=true"
