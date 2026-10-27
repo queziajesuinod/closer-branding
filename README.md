@@ -6,15 +6,17 @@ HTML, CSS e JavaScript puros, sem build. Feito para celular primeiro.
 ## Estrutura
 
 ```
-site/                 ← o que vai para o ar (Netlify publica esta pasta)
+site/                 ← o que vai para o ar (só esta pasta é publicada)
   index.html          página completa: textos, serviços, etapas, SEO
   js/conteudo.js      ✏️ cases (textos e prints), feed do Instagram, WhatsApp, ID do pixel
   js/main.js          comportamento: menu, Antes/Depois, animações, cookies, pixel
   css/                tokens.css (design system) · components.css · site.css
   assets/             fotos, prints dos cases, feed, ícones
-  robots.txt · sitemap.xml · site.webmanifest · _headers
+  robots.txt · sitemap.xml · site.webmanifest
+  serve.json          cabeçalhos de cache e segurança (usados localmente e no servidor)
 closer-ds/            design system (documentação visual dos tokens e componentes)
 docs/SEO.md           mapa de SEO e pendências
+docker-stack.yml      deploy no servidor (Docker Swarm + Traefik)
 ```
 
 ## Ver localmente
@@ -45,5 +47,24 @@ Depois de mudar CSS ou JS, suba o número em `?v=` nos links do `index.html` par
 
 ## Publicar
 
-Conecte o repositório no Netlify e, em *Build settings*, deixe o comando de build vazio e o **Publish directory** como `site`.
+### No servidor (Docker Swarm + Traefik)
+
+O passo a passo completo está no topo do `docker-stack.yml`. Em resumo:
+
+1. Secret `github_token_deploy` com um token de leitura do repositório (se já existe por outro projeto e enxerga este repositório, reaproveite).
+2. Troque `closerbranding.com.br` pelo domínio oficial no `docker-stack.yml` e aponte o DNS (com e sem `www`) para o servidor.
+3. Primeiro deploy:
+
+   ```bash
+   docker stack deploy -c docker-stack.yml closer
+   ```
+
+4. Atualizações: faça o push para a `main` e rode
+
+   ```bash
+   docker service update --force closer_site
+   ```
+
+### Domínio no código
+
 Ao ligar o domínio oficial, troque `https://closerbranding.netlify.app/` em `site/index.html`, `site/robots.txt` e `site/sitemap.xml`.

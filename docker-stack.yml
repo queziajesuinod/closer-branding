@@ -1,0 +1,115 @@
+version: "3.9"
+
+# Deploy do site Closer Branding no servidor (Docker Swarm + Traefik):
+#   docker stack deploy -c docker-stack.yml closer
+#
+# O site é estático (HTML, CSS e JS): não tem banco, .env nem etapa de compilação.
+# O container clona o repositório e serve só a pasta site/ (o design system e os docs não vão para o ar).
+#
+# Antes do primeiro deploy:
+#
+# 1. O secret com o token do GitHub (só leitura do repositório). Se já existe por causa
+#    de outro projeto (ex.: Semeia) e o token enxerga o repositório closer-branding, não precisa criar de novo:
+#      printf 'SEU_TOKEN' | docker secret create github_token_deploy -
+#
+# 2. ⚠️ DOMÍNIO: troque closerbranding.com.br pelo domínio oficial nas 2 regras (rule=) lá embaixo
+#    e em SITE_URL. Aponte o DNS do domínio e do www para este servidor, para o Traefik
+#    conseguir emitir o certificado.
+#    No código, troque também https://closerbranding.netlify.app/ pelo domínio em
+#    site/index.html, site/robots.txt e site/sitemap.xml (é o endereço que o Google e o WhatsApp leem).
+#
+# Para publicar uma atualização: faça o push para a main e rode
+#   docker service update --force closer_site
+# (o container reinicia, puxa a versão nova e volta no ar em poucos segundos).
+
+services:
+  site:
+    image: node:22-alpine
+    working_dir: /app
+    networks:
+      - network_public
+    secrets:
+      - github_token_deploy
+    volumes:
+      # Mantém o código clonado entre reinícios (só faz fetch em vez de clonar de novo).
+      - closer_app:/app
+    environment:
+      PORT: 3013
+      SITE_URL: https://closerbranding.com.br
+      TZ: America/Sao_Paulo
+      GIT_REPO: https://github.com/queziajesuinod/closer-branding.git
+      GIT_BRANCH: main
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        apk add --no-cache git
+
+        TOKEN="$$(cat /run/secrets/github_token_deploy)"
+        AUTH="$$(printf 'x-access-token:%s' "$$TOKEN" | base64 -w0)"
+
+        mkdir -p /app
+        cd /app
+        if [ ! -d .git ]; then
+          echo "📥 Clonando repositório..."
+          rm -rf /app/* /app/.[!.]* || true
+          git -c "http.extraheader=Authorization: Basic $$AUTH" clone --branch "$$GIT_BRANCH" "$$GIT_REPO" .
+        else
+          echo "📢 Atualizando código..."
+          git -c "http.extraheader=Authorization: Basic $$AUTH" fetch origin "$$GIT_BRANCH"
+          git reset --hard "origin/$$GIT_BRANCH"
+        fi
+
+        echo "📦 Instalando o servidor de arquivos..."
+        npm ci --omit=dev --no-audit --no-fund
+
+        # serve entrega a pasta site/ com compressão e os cabeçalhos de cache e segurança de site/serve.json.
+        echo "✨ Closer Branding no ar!"
+        exec npx --no-install serve site --no-clipboard -l "tcp://0.0.0.0:$$PORT"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3013/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      # O primeiro start clona e instala: dá tempo antes de começar a contar falhas.
+      start_period: 90s
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+      update_config:
+        # Sobe o novo antes de derrubar o antigo: atualização sem o site sair do ar.
+        order: start-first
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=network_public"
+        # HTTPS
+        - "traefik.http.routers.closer-secure.rule=Host(`closerbranding.com.br`) || Host(`www.closerbranding.com.br`)"
+        - "traefik.http.routers.closer-secure.entrypoints=websecure"
+        - "traefik.http.routers.closer-secure.tls=true"
+        - "traefik.http.routers.closer-secure.tls.certresolver=letsencryptresolver"
+        # HTTP → HTTPS
+        - "traefik.http.routers.closer.rule=Host(`closerbranding.com.br`) || Host(`www.closerbranding.com.br`)"
+        - "traefik.http.routers.closer.entrypoints=web"
+        - "traefik.http.routers.closer.middlewares=closer-https-redirect"
+        # Porta do container
+        - "traefik.http.services.closer-service.loadbalancer.server.port=3013"
+        # Redirect HTTPS
+        - "traefik.http.middlewares.closer-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.middlewares.closer-https-redirect.redirectscheme.permanent=true"
+        # Sem middleware de "no cache": o site/serve.json já manda HTML, CSS e JS sem cache
+        # e deixa as imagens guardadas no navegador por 7 dias.
+
+volumes:
+  closer_app:
+
+secrets:
+  github_token_deploy:
+    external: true
+
+networks:
+  network_public:
+    external: true

@@ -36,7 +36,7 @@ Objetivo de busca: aparecer para quem procura **agência de branding / posiciona
 - `robots.txt`: libera tudo e aponta o sitemap. De propósito, ele **não** bloqueia links com UTM, porque o robô do Facebook precisa deles para montar a prévia do anúncio.
 - `sitemap.xml`: a página e as imagens principais.
 - `favicon.ico`, `apple-touch-icon.png`, ícones 192 e 512 e `site.webmanifest`. O ícone aparece na aba, na busca do Google no celular e ao salvar o site na tela inicial.
-- `_headers` (Netlify): cache de 7 dias para imagens, CSS e JS sempre conferidos e cabeçalhos de segurança.
+- `serve.json`: cache de 7 dias para imagens, HTML/CSS/JS sempre conferidos, compressão gzip e cabeçalhos de segurança (vale localmente e no servidor).
 
 ## 3. Desempenho (Core Web Vitals)
 
@@ -49,7 +49,7 @@ Objetivo de busca: aparecer para quem procura **agência de branding / posiciona
 
 ## 4. Pendências (dependem da Closer)
 
-1. **Domínio oficial.** Hoje tudo aponta para `https://closerbranding.netlify.app/`. Ao ligar o domínio, troque esse endereço em `index.html` (está marcado com um comentário no topo), `robots.txt` e `sitemap.xml`. No Netlify, deixe o domínio oficial como principal, para o netlify.app redirecionar para ele.
+1. **Domínio oficial.** Hoje tudo aponta para `https://closerbranding.netlify.app/`. Ao ligar o domínio, troque esse endereço em `index.html` (está marcado com um comentário no topo), `robots.txt` e `sitemap.xml`. No `docker-stack.yml`, troque `closerbranding.com.br` pelo domínio (com e sem www) e aponte o DNS para o servidor.
 2. **Google Search Console.** Cadastre o domínio, envie o `sitemap.xml` e peça a indexação.
 3. **Perfil da Empresa no Google (Google Meu Negócio).** É o que mais pesa na busca local ("branding em [cidade]"). Use o mesmo nome, telefone e link do site.
 4. **Cidade.** O site diz só "Santa Catarina". Com a cidade definida, ela entra no rodapé, no `addressLocality` do JSON-LD e na description, e isso melhora a busca local.
